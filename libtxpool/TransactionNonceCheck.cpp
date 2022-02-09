@@ -46,7 +46,7 @@ bool TransactionNonceCheck::isBlockLimitOk(Transaction const& _tx)
                                   << LOG_KV("blkLimit", _tx.blockLimit())
                                   << LOG_KV("maxBlkLimit", m_maxBlockLimit)
                                   << LOG_KV("curBlk", m_blockNumber) << LOG_KV("tx", _tx.hash());
-        return false;
+        return true;
     }
     return true;
 }
