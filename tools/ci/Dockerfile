@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as builder
+FROM bcosbuild:latest as builder
 LABEL maintainer service@fisco.com.cn
 
 WORKDIR /
@@ -7,16 +7,8 @@ ARG SOURCE_BRANCH
 ENV DEBIAN_FRONTEND=noninteractive \
     SOURCE=${SOURCE_BRANCH:-master}
 
-RUN apt-get -q update && apt-get install -qy --no-install-recommends \
-    git clang make build-essential cmake libssl-dev zlib1g-dev ca-certificates \
-    libgmp-dev flex bison patch \
-    && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && apt-get install -qy --no-install-recommends tzdata \
-    && dpkg-reconfigure --frontend noninteractive tzdata \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/FISCO-BCOS/FISCO-BCOS.git && cd FISCO-BCOS \
-    && git checkout ${SOURCE} && cmake . && make -j2 && strip bin/fisco-bcos
+RUN git clone https://oauth2:15cu-VPcCbmEjzW9hgCx@git.iflytek.com/TC_FLYBC/FISCO-BCOS.git && cd FISCO-BCOS \
+    && git checkout ${SOURCE} && cp -r /deps ./deps && cmake . && make -j2 && strip bin/fisco-bcos
 
 FROM ubuntu:18.04
 LABEL maintainer service@fisco.com.cn
