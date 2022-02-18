@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SOURCE=${SOURCE_BRANCH:-master}
 
 RUN git clone https://oauth2:15cu-VPcCbmEjzW9hgCx@git.iflytek.com/TC_FLYBC/FISCO-BCOS.git && cd FISCO-BCOS \
-    && git checkout ${SOURCE} && cp -r /deps ./deps && cmake . && make -j2 && strip bin/fisco-bcos
+    && git checkout ${SOURCE} && cp -r /deps ./deps && cmake . && make -j && strip bin/fisco-bcos
 
 FROM ubuntu:18.04
 LABEL maintainer service@fisco.com.cn
