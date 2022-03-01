@@ -39,16 +39,16 @@ void TransactionNonceCheck::init()
 }
 bool TransactionNonceCheck::isBlockLimitOk(Transaction const& _tx)
 {
-    //if (_tx.blockLimit() == Invalid256 || m_blockNumber >= _tx.blockLimit() ||
-    //    _tx.blockLimit() > (m_blockNumber + m_maxBlockLimit))
-    //{
+    if (_tx.blockLimit() == Invalid256 || m_blockNumber >= _tx.blockLimit() ||
+        _tx.blockLimit() > (m_blockNumber + m_maxBlockLimit))
+    {
     //    NONCECHECKER_LOG(WARNING) << LOG_DESC("InvalidBlockLimit")
     //                              << LOG_KV("blkLimit", _tx.blockLimit())
     //                              << LOG_KV("maxBlkLimit", m_maxBlockLimit)
     //                              << LOG_KV("curBlk", m_blockNumber) << LOG_KV("tx", _tx.hash());
-    //    return false;
-    //}
-    //all conditions around blocklimit will be ignored with return value "true"
+        return true; //all conditions around blocklimit will be ignored with return value "true"
+    }
+    
     return true;
 }
 
