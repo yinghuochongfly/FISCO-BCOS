@@ -1914,7 +1914,7 @@ bool Rpc::checkParamsForGenerateGroup(
         pos++;
     }
     //check the size of set and vector to make it sure that there is no reduplicate params
-    if (sealersSet.size()==_groupParams.sealers.size())
+    if (sealersSet.size()!=_groupParams.sealers.size())
     {
         _response["code"] = LedgerManagementStatusCode::INVALID_PARAMS;
         _response["message"] =
