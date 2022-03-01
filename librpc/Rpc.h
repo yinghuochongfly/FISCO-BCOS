@@ -245,7 +245,7 @@ private:
     bool checkGroupIDForGroupMgr(int _groupID, Json::Value& _response);
     bool checkSealerID(const std::string& _sealer);
     bool checkTimestamp(const std::string& _timestamp);
-    bool checkConnection(const std::set<std::string>& _sealerList, Json::Value& _response);
+    bool checkConnection(const std::vector<std::string>& _sealerList, Json::Value& _response);
 
     void parseTransactionIntoResponse(Json::Value& _response, dev::h256 const& _blockHash,
         int64_t _blockNumber, int64_t _txIndex, Transaction::Ptr _tx, bool onChain = true);

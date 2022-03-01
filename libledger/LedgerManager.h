@@ -28,6 +28,7 @@
 #include <libethcore/Protocol.h>
 #include <map>
 #include <set>
+#include <vector>
 #include <string>
 
 #define LedgerManager_LOG(LEVEL) LOG(LEVEL) << "[LEDGERMANAGER] "
@@ -49,7 +50,7 @@ enum class LedgerStatus
 struct GroupParams
 {
     std::string timestamp;
-    std::set<std::string> sealers;
+    std::vector<std::string> sealers;
     bool enableFreeStorage;
 };
 

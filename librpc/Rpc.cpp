@@ -1797,7 +1797,7 @@ void Rpc::checkNodeVersionForGroupMgr(const char* _methodName)
     }
 }
 
-bool Rpc::checkConnection(const std::set<std::string>& _sealerList, Json::Value& _response)
+bool Rpc::checkConnection(const std::vector<std::string>& _sealerList, Json::Value& _response)
 {
     bool flag = true;
     std::string errorInfo;
@@ -1898,6 +1898,9 @@ bool Rpc::checkParamsForGenerateGroup(
             "GenerateGroup failed for empty sealer list, expect at least one sealer";
         return false;
     }
+
+    //use temporary set to check 
+    std::set<std::string> sealersSet;
     for (auto& sealer : _params["sealers"])
     {
         if (!sealer.isString() || !checkSealerID(sealer.asString()))
@@ -1906,8 +1909,17 @@ bool Rpc::checkParamsForGenerateGroup(
             _response["message"] = "invalid sealer ID at position " + std::to_string(pos);
             return false;
         }
-        _groupParams.sealers.insert(sealer.asString());
+        sealersSet.insert(sealer.asString());
+        _groupParams.sealers.push_back(sealer.asString());
         pos++;
+    }
+    //check the size of set and vector to make it sure that there is no reduplicate params
+    if (sealersSet.size()!=_groupParams.sealers.size())
+    {
+        _response["code"] = LedgerManagementStatusCode::INVALID_PARAMS;
+        _response["message"] =
+            "GenerateGroup failed for reduplicate sealers in given sealer list, expect unique";
+        return false;
     }
 
     // check enable_free_storage
