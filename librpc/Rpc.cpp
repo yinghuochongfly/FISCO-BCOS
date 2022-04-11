@@ -1530,6 +1530,57 @@ Json::Value Rpc::generateGroup(int _groupID, const Json::Value& _params)
     return response;
 }
 
+Json::Value Rpc::generateGroupFromGenesis(int _groupID, const std::string& _genesisHash)
+{
+    //对_genesisHash传入的信息不作校验，仅对groupID进行了校验，未对_genesisHash内所含sealers等信息做校验
+    RPC_LOG(INFO) << LOG_BADGE("generateGroupFromGenesis") << LOG_DESC("request")
+                  << LOG_KV("groupID", _groupID) << LOG_KV("genesisHash", _genesisHash);
+
+    checkNodeVersionForGroupMgr("generateGroupFromGenesis");
+
+    Json::Value response;
+    if (!checkGroupIDForGroupMgr(_groupID, response))
+    {
+        return response;
+    }
+
+    try
+    {
+        ledgerManager()->generateGroupFromGenesis(_groupID,base64Decode(_genesisHash));
+        response["code"] = LedgerManagementStatusCode::SUCCESS;
+        response["message"] = "Group " + std::to_string(_groupID) + " generated successfully";
+    }
+#define CATCH_GROUP_ALREADY_EXISTS_EXCEPTION(e)                                        \
+    catch (e const&)                                                                   \
+    {                                                                                  \
+        response["code"] = LedgerManagementStatusCode::GROUP_ALREADY_EXISTS;           \
+        response["message"] = "Group " + std::to_string(_groupID) + " already exists"; \
+    }
+    CATCH_GROUP_ALREADY_EXISTS_EXCEPTION(GroupIsRunning)
+    CATCH_GROUP_ALREADY_EXISTS_EXCEPTION(GroupIsStopping)
+    CATCH_GROUP_ALREADY_EXISTS_EXCEPTION(GroupAlreadyDeleted)
+    CATCH_GROUP_ALREADY_EXISTS_EXCEPTION(GroupAlreadyStopped)
+#undef CATCH_GROUP_ALREADY_EXISTS_EXCEPTION
+    catch (GenesisConfAlreadyExists const&)
+    {
+        response["code"] = LedgerManagementStatusCode::GENESIS_CONF_ALREADY_EXISTS;
+        response["message"] =
+            "Genesis config file for group " + std::to_string(_groupID) + " already exists";
+    }
+    catch (GroupConfAlreadyExists const&)
+    {
+        response["code"] = LedgerManagementStatusCode::GROUP_CONF_ALREADY_EXIST;
+        response["message"] =
+            "Group config file for group " + std::to_string(_groupID) + " already exists";
+    }
+    catch (std::exception const& _e)
+    {
+        response["code"] = LedgerManagementStatusCode::INTERNAL_ERROR;
+        response["message"] = _e.what();
+    }
+    return response;
+}
+
 Json::Value Rpc::startGroup(int _groupID)
 {
     RPC_LOG(INFO) << LOG_BADGE("startGroup") << LOG_DESC("request") << LOG_KV("groupID", _groupID);

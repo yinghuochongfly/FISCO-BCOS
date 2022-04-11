@@ -142,6 +142,7 @@ public:
         int _groupID, const std::string& _transactionHash) override;
 
     Json::Value generateGroup(int _groupID, const Json::Value& _params) override;
+    Json::Value generateGroupFromGenesis(int _groupID, const std::string& _genesisHash) override;
     Json::Value startGroup(int _groupID) override;
     Json::Value stopGroup(int _groupID) override;
     Json::Value removeGroup(int _groupID) override;

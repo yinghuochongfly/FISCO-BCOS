@@ -115,6 +115,13 @@ public:
     void generateGroup(dev::GROUP_ID _groupID, const GroupParams& _params);
 
     /**
+     * @brief : create a single ledger by group ID
+     * @param _groupID : the ledger need to be created
+     * @param _genesisContext : the ladger genesis context
+     */
+    void generateGroupFromGenesis(dev::GROUP_ID _groupID, const std::string& _genesisContext);
+
+    /**
      * @brief : start a single ledger by group ID
      * @param _groupID : the ledger need to be started
      */
@@ -240,7 +247,7 @@ public:
         RecursiveGuard l(x_ledgerManager);
         return m_groupListCache;
     }
-
+    
 
 private:
     void checkGroupStatus(dev::GROUP_ID const& _groupID, LedgerStatus _allowedStatus);
