@@ -175,6 +175,11 @@ public:
                 "param1", jsonrpc::JSON_INTEGER, "param2", jsonrpc::JSON_OBJECT, NULL),
             &dev::rpc::RpcFace::generateGroupI);
 
+        this->bindAndAddMethod(jsonrpc::Procedure("generateGroupFromGenesis",
+                                   jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",
+                                   jsonrpc::JSON_INTEGER, "param2", jsonrpc::JSON_STRING, NULL),
+            &dev::rpc::RpcFace::generateGroupFromGenesisI);
+
         this->bindAndAddMethod(jsonrpc::Procedure("startGroup", jsonrpc::PARAMS_BY_POSITION,
                                    jsonrpc::JSON_OBJECT, "param1", jsonrpc::JSON_INTEGER, NULL),
             &dev::rpc::RpcFace::startGroupI);
@@ -378,6 +383,12 @@ public:
             this->generateGroup(boost::lexical_cast<int>(request[0u].asString()), request[1u]);
     }
 
+    inline virtual void generateGroupFromGenesisI(const Json::Value& request, Json::Value& response)
+    {
+        response = this->generateGroupFromGenesis(
+            boost::lexical_cast<int>(request[0u].asString()), request[1u].asString());
+    }
+
     inline virtual void startGroupI(const Json::Value& request, Json::Value& response)
     {
         response = this->startGroup(boost::lexical_cast<int>(request[0u].asString()));
@@ -484,6 +495,7 @@ public:
 
     // Group operation part
     virtual Json::Value generateGroup(int param1, const Json::Value& param2) = 0;
+    virtual Json::Value generateGroupFromGenesis(int param1, const std::string& param2) = 0;
     virtual Json::Value startGroup(int param1) = 0;
     virtual Json::Value stopGroup(int param1) = 0;
     virtual Json::Value removeGroup(int param1) = 0;

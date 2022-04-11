@@ -195,6 +195,41 @@ void LedgerManager::generateGroup(dev::GROUP_ID _groupID, const GroupParams& _pa
     setGroupStatus(_groupID, LedgerStatus::STOPPED);
 }
 
+void LedgerManager::generateGroupFromGenesis(dev::GROUP_ID _groupID, const std::string& _genesisContext)
+{
+    RecursiveGuard l(x_ledgerManager);
+    checkGroupStatus(_groupID, LedgerStatus::INEXISTENT);
+
+    auto confDir = g_BCOSConfig.confDir();
+    std::string genesisConfFileName = "group." + std::to_string(_groupID) + ".genesis";
+    boost::filesystem::path genesisConfFilePath(
+        confDir + boost::filesystem::path::separator + genesisConfFileName);
+    if (exists(genesisConfFilePath))
+    {
+        BOOST_THROW_EXCEPTION(GenesisConfAlreadyExists());
+    }
+
+    std::string groupConfFileName = "group." + std::to_string(_groupID) + ".ini";
+    boost::filesystem::path groupConfFilePath(
+        confDir + boost::filesystem::path::separator + groupConfFileName);
+    if (boost::filesystem::exists(groupConfFilePath))
+    {
+        BOOST_THROW_EXCEPTION(GroupConfAlreadyExists());
+    }
+
+    std::ofstream genesisConfFile, groupConfFile;
+    genesisConfFile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+    groupConfFile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+    genesisConfFile.open(genesisConfFilePath.c_str());
+    genesisConfFile << _genesisContext;
+
+    groupConfFile.open(groupConfFilePath.c_str());
+    groupConfFile << generateGroupConfig();
+
+    setGroupStatus(_groupID, LedgerStatus::STOPPED);
+}
+
 string LedgerManager::generateGenesisConfig(dev::GROUP_ID _groupID, const GroupParams& _params)
 {
     static string configTemplate =
